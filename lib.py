@@ -181,15 +181,13 @@ def shift_all(dataframe):
     shift(dataframe, "deaths")
 
 
-def plot(dataframe, field):
+def plot(dataframe, field, hue="Country/Region"):
     """
     Plot *field* from *dataframe*
     """
     plt.subplots(figsize=(15, 10))
     sns.set_palette("bright")
-    sns.lineplot(
-        x=dataframe.index, y=field, data=dataframe, hue="Country/Region"
-    )
+    sns.lineplot(x=dataframe.index, y=field, data=dataframe, hue=hue)
 
 
 def smooth(dataframe, field):
@@ -219,3 +217,28 @@ def prepare_for_plot(dataframe, country_pop):
         .set_index(["days_after_cutoff"])
     )
     return output
+
+
+def fetch_sante_lu():
+    url = "https://data.public.lu/en/datasets/r/1da1bb72-4450-4f60-915b-6c355db2e7fa"
+    frame = pd.read_csv(
+        url,
+        encoding="latin-1",
+        header=0,
+        names=[
+            "date",
+            "soins_normaux",
+            "soins_intensifs_sans_ge",
+            "si_sans_ge",
+            "morts",
+            "depart_hopital",
+            "cumulative_positive",
+            "positive",
+            "num_tests",
+            "num_tests_cumulative",
+        ],
+        na_values={"-"},
+    )
+    frame["date"] = pd.to_datetime(frame["date"], format="%d/%m/%Y")
+    date_indexed = frame.set_index("date")
+    return date_indexed.drop(["si_sans_ge"], axis="columns")
