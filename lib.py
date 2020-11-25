@@ -238,6 +238,7 @@ def fetch_sante_lu():
             "num_tests_cumulative",
         ],
         na_values={"-"},
+        sep=";",
     )
     frame["date"] = pd.to_datetime(frame["date"], format="%d/%m/%Y")
     date_indexed = frame.set_index("date")
